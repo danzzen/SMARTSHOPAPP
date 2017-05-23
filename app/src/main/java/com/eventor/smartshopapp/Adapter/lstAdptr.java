@@ -30,13 +30,13 @@ public class lstAdptr extends CursorAdapter {
     }
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView tvBody = (TextView) view.findViewById(R.id.tvBody);
-        TextView tvPriority = (TextView) view.findViewById(R.id.tvPriority);
+        TextView tvBody = (TextView) view.findViewById(R.id.name);
+        TextView tvPriority = (TextView) view.findViewById(R.id.rate);
         int name_col=(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME));
        int priority_col =(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_RATE));
         String body=cursor.getString(name_col);
        String priority=cursor.getString(priority_col);
-       tvBody.setText(body);
-       tvPriority.setText(priority);
+       tvBody.setText("NAME : "+body);
+       tvPriority.setText("Quantity : "+priority);
     }
 }
