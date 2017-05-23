@@ -50,11 +50,11 @@ public class Bill_listAdapter extends CursorAdapter {
         float n2=Float.parseFloat(z1);
         float T=n2*number;
         String total=String.valueOf(T);
-        a.setText(p1);
-        b.setText(q1);
-        c.setText(x1);
-        d.setText(y1);
-        e.setText(z1);
-        f.setText(total);
+        a.setText("BILL NO : "+p1);
+        b.setText("DATE : "+q1);
+        c.setText("PRODUCT NAME : "+x1);
+        d.setText("QUANTITY : "+y1);
+        e.setText("UNIT PRICE : "+z1);
+        f.setText("TOTAL PRIZE : "+total);
     }
 }

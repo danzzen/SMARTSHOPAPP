@@ -9,8 +9,9 @@
         android:layout_height="wrap_content"
         android:text="Study cursors"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_below="@+id/dt"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignTop="@+id/dt"
+        android:layout_toEndOf="@+id/productnm"
+        android:layout_marginStart="16dp" />
     <TextView
         android:id="@+id/dt"
         android:layout_width="wrap_content"
@@ -37,19 +38,20 @@
         android:id="@+id/qnt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/bno"
-        android:layout_alignTop="@+id/productnm"
-        android:layout_marginStart="28dp"
-        android:text="TextView" />
+        android:text="TextView"
+        android:layout_marginEnd="33dp"
+        android:layout_alignBaseline="@+id/productnm"
+        android:layout_alignBottom="@+id/productnm"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/unt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/qnt"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="25dp"
-        android:text="TextView" />
+        android:text="TextView"
+        android:layout_below="@+id/qnt"
+        android:layout_alignStart="@+id/total"
+        android:layout_marginTop="27dp" />
 
     <TextView
         android:id="@+id/total"
