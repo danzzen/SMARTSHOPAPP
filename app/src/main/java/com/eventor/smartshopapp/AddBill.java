@@ -1,14 +1,19 @@
 package com.eventor.smartshopapp;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -25,14 +31,27 @@ import com.eventor.smartshopapp.DATA.BillContract;
 import com.eventor.smartshopapp.DATA.ProductContract;
 
 import com.eventor.smartshopapp.DATA.ProductContract.ProductEntry;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by lenovo on 21-05-2017.
  */
 
 public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private EditText e1,e2,e3,e4,e5;
+    private EditText e1, e2, e3, e4, e5;
     private Uri mCurrentPetUri;
+    Button pdf, print;
+    File myFile;
     private static final int x = 0;
 
     @Override
@@ -50,15 +69,104 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
         }
 
         // Find all relevant views that we will need to read user input from
-     e1=(EditText)findViewById(R.id.billNo);
-     e2=(EditText)findViewById(R.id.date);
-        e3=(EditText)findViewById(R.id.product_name);
-        e4=(EditText)findViewById(R.id.product_qun);
-        e5=(EditText)findViewById(R.id.unit);
-
+        e1 = (EditText) findViewById(R.id.billNo);
+        e2 = (EditText) findViewById(R.id.date);
+        e3 = (EditText) findViewById(R.id.product_name);
+        e4 = (EditText) findViewById(R.id.product_qun);
+        e5 = (EditText) findViewById(R.id.unit);
+        pdf = (Button)findViewById(R.id.pdfbutton);
+        print = (Button)findViewById(R.id.printbutton);
+        pdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    createPdf();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
+    public void createPdf() throws FileNotFoundException, DocumentException {
+        File pdfFolder = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), "pdfdemo");
+        if (!pdfFolder.exists()) {
+            pdfFolder.mkdir();
+            Log.i("adcd vf fvdf df vdf", "Pdf Directory created");
+        }
+        Date date = new Date() ;
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
 
+         myFile = new File(pdfFolder + timeStamp + ".pdf");
+        OutputStream output = new FileOutputStream(myFile);
+       Document document = new Document();
+
+        //Step 2
+        PdfWriter.getInstance(document, output);
+
+        //Step 3
+        document.open();
+
+        //Step 4 Add content
+        document.add(new Paragraph(e1.getText().toString()));
+        document.add(new Paragraph(e2.getText().toString()));
+        document.add(new Paragraph(e3.getText().toString()));
+        document.add(new Paragraph(e4.getText().toString()));
+        document.add(new Paragraph(e5.getText().toString()));
+
+        //Step 5: Close the document
+        document.close();
+        promptForNextAction();
+    }
+    private void promptForNextAction()
+    {
+        final String[] options = { "Share", "Review",
+                "Dismiss"};
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(AddBill.this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(AddBill.this);
+        }
+        builder.setTitle("Note Saved, What Next?");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (options[which].equals("Share")){
+                    emailNote();
+                }else if (options[which].equals("Review")){
+                    viewPdf();
+                }else if (options[which].equals("Dismiss")){
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        builder.show();
+    }
+    private void emailNote(){
+        Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+
+
+            intentShareFile.setType("application/pdf");
+            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse(myFile.getAbsolutePath()));
+
+            intentShareFile.putExtra(Intent.EXTRA_SUBJECT,
+                    "Sharing File...");
+            intentShareFile.putExtra(Intent.EXTRA_TEXT, "Sharing File...");
+
+            startActivity(Intent.createChooser(intentShareFile, "Share File"));
+
+    }
+    private void viewPdf(){
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(myFile), "application/pdf");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
     /**
      * Setup the dropdown spinner that allows the user to select the gender of the pet.
      */
@@ -78,7 +186,6 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 insertbill();
-
                 finish();
                 return true;
             // Respond to a click on the "Delete" menu option
@@ -93,7 +200,8 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
         }
         return super.onOptionsItemSelected(item);
     }
-    private void deleteBill(){
+
+    private void deleteBill() {
 
         if (mCurrentPetUri == null) {
 
@@ -107,6 +215,7 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
             }
         }
     }
+
     private void insertbill() {
 
         String n1 = e1.getText().toString().trim();
@@ -153,7 +262,7 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
                 BillContract.BillEntry.COLUMN_Bill_PRODUCT,
                 BillContract.BillEntry.COLUMN_Bill_QUANTITY,
                 BillContract.BillEntry.COLUMN_Bill_UNIT};
-        return new CursorLoader(this, BillContract.BillEntry.CONTENT_URI1,projection,null,null,null);                  // Default sort order
+        return new CursorLoader(this, BillContract.BillEntry.CONTENT_URI1, projection, null, null, null);                  // Default sort order
     }
 
 
@@ -164,19 +273,19 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
         }
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
-            int p=(cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_NO));
-            int q=(cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_Date));
-            int x=(cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_PRODUCT));
-            int y=(cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_QUANTITY));
-            int z=(cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_UNIT));
-           // Log.d("yo ",Integer.toString(breedColumnIndex));
+            int p = (cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_NO));
+            int q = (cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_Date));
+            int x = (cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_PRODUCT));
+            int y = (cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_QUANTITY));
+            int z = (cursor.getColumnIndex(BillContract.BillEntry.COLUMN_Bill_UNIT));
+            // Log.d("yo ",Integer.toString(breedColumnIndex));
 
             // Extract out the value from the Cursor for the given column index
             String n1 = cursor.getString(p);
             String n2 = cursor.getString(q);
             String n3 = cursor.getString(x);
             String n4 = cursor.getString(y);
-            String n5= cursor.getString(z);
+            String n5 = cursor.getString(z);
             // For each of the textViews I’ll set the proper text.
 
             // Update the views on the screen with the values from the database
@@ -196,7 +305,7 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-       e1.setText("");
+        e1.setText("");
         e2.setText("");
         e3.setText("");
         e4.setText("");

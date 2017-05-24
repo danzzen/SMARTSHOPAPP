@@ -9,20 +9,21 @@
         android:layout_height="wrap_content"
         android:text="Study cursors"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_alignTop="@+id/dt"
-        android:layout_toEndOf="@+id/productnm"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/productnm" />
     <TextView
         android:id="@+id/dt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:text="3"
+        android:text="Date"
+        android:textSize="10sp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginTop="26dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/bno"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="52dp" />
+        android:layout_marginEnd="20dp" />
 
     <TextView
         android:id="@+id/productnm"

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eventor.smartshopapp">
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -37,13 +39,21 @@
             android:name=".DATA.ProductProvider"
             android:authorities="com.eventor.smartshopapp">
         </provider>
-        <activity android:name=".Bill"/>
+        <activity android:name=".Bill"
+            android:parentActivityName=".MainActivity"
+
+           >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
         <activity android:name=".AddBill"
             android:parentActivityName=".Bill"
             android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Bill"/>
+
         </activity>
     </application>
 

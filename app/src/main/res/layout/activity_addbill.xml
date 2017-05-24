@@ -26,10 +26,38 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!-- Label -->
+       <LinearLayout
+           android:layout_width="wrap_content"
+           android:layout_height="match_parent"
+           android:orientation="vertical"
+           >
         <TextView
-            android:text="@string/category_overview"
-            style="@style/CategoryStyle" />
+            android:text="Bill No"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CategoryStyle"
+           />
+        <TextView
+            android:text="Bill Date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/CategoryStyle"/>
+           <TextView
+               android:text="Product"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               style="@style/CategoryStyle"/>
+           <TextView
+               android:text="Qnty"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               style="@style/CategoryStyle"/>
+           <TextView
+               android:text="Unit P"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               style="@style/CategoryStyle"/>
+       </LinearLayout>
 
         <!-- Input fields -->
         <LinearLayout
@@ -68,6 +96,27 @@
                 style="@style/EditorFieldStyle"/>
         </LinearLayout>
     </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="horizontal"
+    android:layout_marginTop="30dp">
+    <Button
+        android:id="@+id/pdfbutton"
 
+        android:layout_marginLeft="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PDF" />
 
+    <Button
+        android:id="@+id/printbutton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+
+        android:text="PRINT" />
+</LinearLayout>
 </LinearLayout>
