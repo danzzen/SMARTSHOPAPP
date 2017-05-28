@@ -18,6 +18,7 @@ public class ProductContract {
             public final static String  _ID=BaseColumns._ID;
             public final static String  COLUMN_PRODUCT_NAME="name";
             public final static String  COLUMN_PRODUCT_RATE="rate";
+            public final static String  COLOUMN_PRODUCT_IMAGE="Image";
 
         }
     }

@@ -157,7 +157,8 @@ public class MainActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String[] prejection = {ProductContract.ProductEntry._ID,
                 ProductContract.ProductEntry.COLUMN_PRODUCT_NAME,
-                ProductContract.ProductEntry.COLUMN_PRODUCT_RATE
+                ProductContract.ProductEntry.COLUMN_PRODUCT_RATE,
+                ProductContract.ProductEntry.COLOUMN_PRODUCT_IMAGE
         };
         return new CursorLoader(this, ProductContract.ProductEntry.CONTENT_URI,prejection,null,null,null);
 

@@ -1,5 +1,6 @@
 package com.eventor.smartshopapp;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,6 +32,12 @@ import com.eventor.smartshopapp.DATA.BillContract;
 import com.eventor.smartshopapp.DATA.ProductContract;
 
 import com.eventor.smartshopapp.DATA.ProductContract.ProductEntry;
+import com.hp.mss.hpprint.model.ImagePrintItem;
+import com.hp.mss.hpprint.model.PDFPrintItem;
+import com.hp.mss.hpprint.model.PrintItem;
+import com.hp.mss.hpprint.model.PrintJobData;
+import com.hp.mss.hpprint.model.asset.PDFAsset;
+import com.hp.mss.hpprint.util.PrintUtil;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -62,7 +69,7 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
         mCurrentPetUri = intent.getData();
 
         if (mCurrentPetUri == null) {
-            setTitle("Add a Product");
+            setTitle("Add a Bill");
         } else {
             setTitle("Edit Product");
             getSupportLoaderManager().initLoader(x, null, this);
@@ -88,37 +95,60 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
                 }
             }
         });
+        print.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    createFile();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                }
+                printBill();
+            }
+        });
 
     }
-    public void createPdf() throws FileNotFoundException, DocumentException {
+    public void printBill(){
+        PDFAsset pdfAsset4x6 = new PDFAsset(myFile.getAbsolutePath());
+        PrintItem printItemDefault = new PDFPrintItem(PrintItem.ScaleType.CENTER, pdfAsset4x6);
+        PrintJobData printJobData = new PrintJobData(getApplication(), printItemDefault);
+        printJobData.setJobName("Example");
+        PrintUtil.setPrintJobData(printJobData);
+        PrintUtil.print(this);
+    }
+    public void createFile() throws FileNotFoundException, DocumentException {
         File pdfFolder = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOCUMENTS), "pdfdemo");
         if (!pdfFolder.exists()) {
             pdfFolder.mkdir();
-            Log.i("adcd vf fvdf df vdf", "Pdf Directory created");
         }
         Date date = new Date() ;
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
 
-         myFile = new File(pdfFolder + timeStamp + ".pdf");
+        myFile = new File(pdfFolder + timeStamp + ".pdf");
         OutputStream output = new FileOutputStream(myFile);
-       Document document = new Document();
-
+        Document document = new Document();
         //Step 2
         PdfWriter.getInstance(document, output);
-
         //Step 3
         document.open();
-
+        document.add(new Paragraph("                                                                                                                    Shop details"));
         //Step 4 Add content
-        document.add(new Paragraph(e1.getText().toString()));
-        document.add(new Paragraph(e2.getText().toString()));
-        document.add(new Paragraph(e3.getText().toString()));
-        document.add(new Paragraph(e4.getText().toString()));
-        document.add(new Paragraph(e5.getText().toString()));
+        document.add(new Paragraph("                                          Product deatails"));
+        document.add(new Paragraph("Bill No : "+e1.getText().toString()));
+        document.add(new Paragraph("Bill Date : "+e2.getText().toString()));
+        document.add(new Paragraph("Product Purchased : "+e3.getText().toString()));
+        document.add(new Paragraph("Quantity : "+e4.getText().toString()));
+        document.add(new Paragraph("UNIT : "+e5.getText().toString()));
 
         //Step 5: Close the document
         document.close();
+    }
+    public void createPdf() throws FileNotFoundException, DocumentException {
+        createFile();
+        insertbill();
         promptForNextAction();
     }
     private void promptForNextAction()
@@ -131,7 +161,7 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
         } else {
             builder = new AlertDialog.Builder(AddBill.this);
         }
-        builder.setTitle("Note Saved, What Next?");
+        builder.setTitle("Bill Saved, What Next?");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -152,7 +182,7 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
 
 
             intentShareFile.setType("application/pdf");
-            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse(myFile.getAbsolutePath()));
+        intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse(myFile.getAbsolutePath()));
 
             intentShareFile.putExtra(Intent.EXTRA_SUBJECT,
                     "Sharing File...");
@@ -223,31 +253,56 @@ public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCa
         String n3 = e3.getText().toString().trim();
         String n4 = e4.getText().toString().trim();
         String n5 = e5.getText().toString().trim();
-        ContentValues values = new ContentValues();
-        values.put(BillContract.BillEntry.COLUMN_Bill_NO, n1);
-        values.put(BillContract.BillEntry.COLUMN_Bill_Date, n2);
-        values.put(BillContract.BillEntry.COLUMN_Bill_PRODUCT, n3);
-        values.put(BillContract.BillEntry.COLUMN_Bill_QUANTITY, n4);
-        values.put(BillContract.BillEntry.COLUMN_Bill_UNIT, n5);
+        if (!n1.equals("") && !n2.equals("") && !n3.equals("") && !n4.equals("") && !n5.equals("")) {
+            ContentValues values = new ContentValues();
+            values.put(BillContract.BillEntry.COLUMN_Bill_NO, n1);
+            values.put(BillContract.BillEntry.COLUMN_Bill_Date, n2);
+            values.put(BillContract.BillEntry.COLUMN_Bill_PRODUCT, n3);
+            values.put(BillContract.BillEntry.COLUMN_Bill_QUANTITY, n4);
+            values.put(BillContract.BillEntry.COLUMN_Bill_UNIT, n5);
 
 
-        if (mCurrentPetUri == null) {
-            Uri newUri = getContentResolver().insert(BillContract.BillEntry.CONTENT_URI1, values);
-            if (newUri == null) {
-                // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, "failurekj",
-                        Toast.LENGTH_SHORT).show();
+            if (mCurrentPetUri == null) {
+
+                Uri newUri = getContentResolver().insert(BillContract.BillEntry.CONTENT_URI1, values);
+                if (newUri == null) {
+                    // If the new content URI is null, then there was an error with insertion.
+                    Toast.makeText(this, "failurekj",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    // Otherwise, the insertion was successful and we can display a toast.
+                    Toast.makeText(this, "Pet Saved",
+                            Toast.LENGTH_SHORT).show();
+                }
             } else {
-                // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, "Pet Saved",
-                        Toast.LENGTH_SHORT).show();
+                int row = getContentResolver().update(mCurrentPetUri, values, null, null);
+                if (row == 0) {
+                    Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Updated", Toast.LENGTH_LONG).show();
+                }
             }
-        } else {
-            int row = getContentResolver().update(mCurrentPetUri, values, null, null);
-            if (row == 0) {
-                Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Updated", Toast.LENGTH_LONG).show();
+        }
+        else{
+            if(n1.equals(""))
+            {
+                e1.setHint("required");
+            }
+            if(n2.equals(""))
+            {
+                e2.setHint("required");
+            }
+            if(n3.equals(""))
+            {
+                e3.setHint("required");
+            }
+            if(n4.equals(""))
+            {
+                e4.setHint("required");
+            }
+            if(n5.equals(""))
+            {
+                e5.setHint("required");
             }
         }
     }

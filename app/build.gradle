@@ -30,4 +30,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.itextpdf:itext-pdfa:5.5.11'
     compile 'com.itextpdf:itextg:5.5.10'
+    compile 'com.hp.mss:mobileprintsdk:v2.02.466'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
 }

@@ -16,6 +16,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     "CREATE TABLE " + ProductContract.ProductEntry.TABLE_NAME + " (" +
                     ProductContract.ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     ProductContract.ProductEntry.COLUMN_PRODUCT_NAME + " TEXT," +
+                    ProductContract.ProductEntry.COLOUMN_PRODUCT_IMAGE+ " TEXT,"+
                     ProductContract.ProductEntry.COLUMN_PRODUCT_RATE + " TEXT)" ;
     public static final String SQL_CREATE_ENTRIES2=
             "CREATE TABLE "+BillEntry.TABLE_NAME+" ("+
