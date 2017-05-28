@@ -49,11 +49,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-/**
- * Created by lenovo on 21-05-2017.
- */
-
 public class AddBill extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private EditText e1, e2, e3, e4, e5;
     private Uri mCurrentPetUri;

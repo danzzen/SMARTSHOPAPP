@@ -16,17 +16,10 @@ import android.widget.TextView;
 import com.eventor.smartshopapp.DATA.ProductContract;
 import com.eventor.smartshopapp.R;
 import com.squareup.picasso.Picasso;
-
-
-/**
- * Created by lenovo on 21-05-2017.
- */
-
 public class lstAdptr extends CursorAdapter {
 
     public lstAdptr(Context context, Cursor c) {
         super(context, c,0);
-//        Toast.makeText(context, c.getString(c.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME)), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -51,16 +44,5 @@ public class lstAdptr extends CursorAdapter {
                 .resize(150,150)
                 .centerCrop()// URL or file
                 .into(productImage); // An ImageView object to show the loaded image
-    }
-    public Bitmap StringToBitMap(String encodedString) {
-        try {
-            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0,
-                    encodeByte.length);
-            return bitmap;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
     }
 }
